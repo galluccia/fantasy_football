@@ -1,19 +1,21 @@
 #!/usr/local/bin/python3
 """
-purpose of this is to give you a rich feature set to be of assistance you during the draft 
+purpose of this is to give you a rich feature set to be able to draft sucessfully
+this command line app should have the following:
+
 
 TODO:
  - abilily to run optimization based on:
-    projected stats
-    strength of schedule
     bye weeks
-    
+    draft order
 """
 import sys
 import cmd
+import ast
 import readline
 import pandas as pd
 from tabulate import tabulate
+
 
 class MyCmd(cmd.Cmd):
 
@@ -31,8 +33,8 @@ class MyCmd(cmd.Cmd):
         """ if showintro else ""             
         self.draft = pd.read_csv("draft_order.csv")
         self.available_players = pd.read_csv("available_players.csv")
-        self.player_list = pd.read_csv("available_players.csv").Player.tolist()
-        self.player_pos = pd.read_csv("available_players.csv").set_index('Player').Pos.to_dict()
+        self.player_list = self.available_players.Player.tolist()
+        self.player_pos = self.available_players.set_index('Player').Pos.to_dict()
         self.has_been_chosen = dict()
         self.managers = [str(x).lower().strip() for x in self.draft.team.unique()]
         self.round = 0 
@@ -163,7 +165,8 @@ class MyCmd(cmd.Cmd):
 
     def update_data(self):
         """helper fn to update data whenever add or delete is called"""
-        
+        with open('pick_log.txt','w') as data:
+            data.write(str(self.has_been_chosen))
 
     def do_clear(self, inp):
         import subprocess; subprocess.call('clear', shell=True)
